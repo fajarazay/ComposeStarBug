@@ -2,20 +2,13 @@ package com.fajarazay.github.composestarbuck.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.FloatRange
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,9 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fajarazay.github.composestarbuck.R
 import com.fajarazay.github.composestarbuck.data.OnBoardingData
+import com.fajarazay.github.composestarbuck.ui.component.CarouselIndicator
+import com.fajarazay.github.composestarbuck.ui.component.SpannableText
 import com.fajarazay.github.composestarbuck.ui.login.LoginActivity
 import com.fajarazay.github.composestarbuck.ui.theme.ColorPrimary
 import com.fajarazay.github.composestarbuck.ui.theme.ComposeStarBuckTheme
+import com.fajarazay.github.composestarbuck.utils.AnnotatedStringTextSpannable
+import com.fajarazay.github.composestarbuck.utils.rememberPagerState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -48,7 +45,7 @@ class MainActivity : ComponentActivity() {
             ComposeStarBuckTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    onboardingContent()
+                    OnBoardingContent()
                 }
             }
         }
@@ -57,7 +54,7 @@ class MainActivity : ComponentActivity() {
 
 @ExperimentalPagerApi
 @Composable
-fun onboardingContent() {
+fun OnBoardingContent() {
     Surface(modifier = Modifier.fillMaxSize()) {
 
         val items = ArrayList<OnBoardingData>()
@@ -65,7 +62,7 @@ fun onboardingContent() {
         items.add(
             OnBoardingData(
                 R.drawable.img_onboarding_first,
-                "Good Cofffe \n" +
+                "Good Coffee \n" +
                         "Good Moods",
                 "“To inspire and nurture the human spirit–one person, one cup and one neighborhood at a time.”"
             )
@@ -74,7 +71,7 @@ fun onboardingContent() {
         items.add(
             OnBoardingData(
                 R.drawable.img_onboarding_second,
-                "Starbucks Frappucino Work can wait",
+                "Starbucks Frappuccino Work can wait",
                 "“Bring a friend and enjoy a Frappuccino. \n" +
                         "Find stores in your area.”"
             )
@@ -100,15 +97,6 @@ fun onboardingContent() {
                 .fillMaxWidth()
         )
 
-    }
-}
-
-@ExperimentalPagerApi
-@Preview(showBackground = true)
-@Composable
-fun OnboardingPreview() {
-    ComposeStarBuckTheme {
-        onboardingContent()
     }
 }
 
@@ -161,16 +149,16 @@ fun OnBoardingPager(
                                 }
                                 1 -> {
                                     withStyle(style = SpanStyle(color = ColorPrimary)) {
-                                        append(item[page].title.split("Frappucino").first())
+                                        append(item[page].title.split("Frappuccino").first())
                                     }
-                                    append("Frappucino")
+                                    append("Frappuccino")
                                     withStyle(
                                         style = SpanStyle(
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Black
                                         )
                                     ) {
-                                        append(item[page].title.split("Frappucino").last())
+                                        append(item[page].title.split("Frappuccino").last())
                                     }
                                 }
                                 else -> {
@@ -207,7 +195,8 @@ fun OnBoardingPager(
                 }
             }
 
-            PagerIndicator(item.size, pagerState.currentPage)
+            Spacer(modifier = Modifier.height(24.dp))
+            CarouselIndicator(item.size, pagerState.currentPage)
             Button(
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = ColorPrimary,
@@ -215,6 +204,7 @@ fun OnBoardingPager(
                 onClick = { /*TODO*/},
                 modifier = Modifier
                     .padding(top = 24.dp)
+                    .height(48.dp)
                     .clip(RoundedCornerShape(16.dp))
 
             ) {
@@ -222,11 +212,12 @@ fun OnBoardingPager(
                     modifier = Modifier.padding(horizontal = 32.dp),
                     text = "Get Started", color = Color.White,
                     style = TextStyle(
-                        fontSize = 22.sp
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
                     )
                 )
             }
-
+            Spacer(modifier = Modifier.height(32.dp))
             LoginClickableText()
         }
     }
@@ -234,95 +225,23 @@ fun OnBoardingPager(
 
 @ExperimentalPagerApi
 @Composable
-fun rememberPagerState(
-    @androidx.annotation.IntRange(from = 0) pageCount: Int,
-    @androidx.annotation.IntRange(from = 0) initialPage: Int = 0,
-    @FloatRange(from = 0.0, to = 1.0) initialPageOffset: Float = 0f,
-    @androidx.annotation.IntRange(from = 1) initialOffscreenLimit: Int = 1,
-    infiniteLoop: Boolean = false
-): PagerState = rememberSaveable(saver = PagerState.Saver) {
-    PagerState(
-        pageCount = pageCount,
-        currentPage = initialPage,
-        currentPageOffset = initialPageOffset,
-        offscreenLimit = initialOffscreenLimit,
-        infiniteLoop = infiniteLoop
-    )
-}
-
-@Composable
-fun PagerIndicator(size: Int, currentPage: Int) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier.padding(top = 24.dp)
-    ) {
-        repeat(size) {
-            Indicator(isSelected = it == currentPage)
-        }
-    }
-}
-
-@Composable
-fun Indicator(isSelected: Boolean) {
-    val width = animateDpAsState(targetValue = if (isSelected) 25.dp else 10.dp)
-
-    Box(
-        modifier = Modifier
-            .padding(1.dp)
-            .height(10.dp)
-            .width(width.value)
-            .clip(CircleShape)
-            .background(
-                if (isSelected) ColorPrimary else Color(0xFF979797)
-            )
-    )
-}
-
-@Composable
 fun LoginClickableText() {
     val context = LocalContext.current
-
-    val annotatedText = buildAnnotatedString {
-        withStyle(
-            style = SpanStyle(
-                color = Color.Gray,
-            )
-        ) {
-            append("Already have an account?")
-
-        }
-        pushStringAnnotation(
-            tag = "Login",// provide tag which will then be provided when you click the text
-            annotation = "Login"
-        )
-        //add text with your different color/style
-        withStyle(
-            style = SpanStyle(
-                color = ColorPrimary,
-            )
-        ) {
-            append(" Log In")
-        }
-        // when pop is called it means the end of annotation with current tag
-        pop()
-    }
-
-    ClickableText(
-        modifier = Modifier.padding(vertical = 32.dp),
-        style = TextStyle(
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium
-        ),
-        text = annotatedText,
-        onClick = { offset ->
-            annotatedText.getStringAnnotations(
-                tag = "Login",// tag which you used in the buildAnnotatedString
-                start = offset,
-                end = offset
-            ).firstOrNull()?.let { annotation ->
-                Toast.makeText(context, "$annotation.item", Toast.LENGTH_SHORT).show()
-                context.startActivity(Intent(context, LoginActivity::class.java))
-            }
-        }
+    val tagAnnotation = "Login"
+    val annotatedString = AnnotatedStringTextSpannable.setAnnotatedString(
+        firstAppend = "Already have an account?",
+        tagAnnotation = tagAnnotation, secondAppend = " Log In"
     )
+    SpannableText(annotatedText = annotatedString, tag = tagAnnotation, onClick = {
+        context.startActivity(Intent(context, LoginActivity::class.java))
+    })
+}
+
+@ExperimentalPagerApi
+@Preview(showBackground = true)
+@Composable
+fun OnBoardingPreview() {
+    ComposeStarBuckTheme {
+        OnBoardingContent()
+    }
 }
